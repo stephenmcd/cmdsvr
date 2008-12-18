@@ -1,0 +1,33 @@
+<html>
+	
+<head>
+	<title>$room.name</title>
+	<script>
+		window.onload = function() {
+			document.forms[0].user.focus();
+		};
+	</script>
+</head>
+
+<body>
+
+<form action="main">
+<table border="1" cellspacing="0" cellpadding="20" align="center" width="500">
+	<tr>
+		<th colspan="2"><h1>$room.name</h1></th>
+	<tr>
+		<td><label>Name:</label></td>
+		<td>
+			<input type="text" name="user" value="" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2" align="right">
+			<input type="submit" value="Enter" style="cursor:pointer;" />
+		</td>
+	</tr>
+</table>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+
+<title>Testing $command.name</title>
+
+<h1>$command.name</h1>
+<p>$command.doc</p>
+
+<form action="$command.name">
+<table border="1" cellpadding="10" cellspacing="0">
+	#for $arg in $command.args
+	<tr>
+		<td><label>$arg:</label></td>
+		<td>
+			<input type="#if $arg == "password" then "password" else "text"#" name="$arg" value="" />
+		</td>
+	</tr>
+	#end for
+	<tr>
+		<td colspan="2" align="right">
+			<input type="submit" value="Test $command.name" style="cursor:pointer;" />
+		</td>
+	</tr>
+</table>
+</form>
+
+<a href="/">Back to Commands</a>

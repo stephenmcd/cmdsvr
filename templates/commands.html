@@ -1,0 +1,14 @@
+
+<title>Commands</title>
+<h1>Commands</h1>
+
+<table border="1" cellpadding="5">
+#for $command in $commands
+	#if $command.name != "index"
+	<tr>
+		<td><a href="?command=$command.name"><code>$command.sig</code></a></td>
+		<td><p>$command.doc</p></td>
+	</tr>
+	#end if
+#end for
+</table>
