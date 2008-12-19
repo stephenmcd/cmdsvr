@@ -23,12 +23,12 @@ __version__ = "0.1"
 
 class Command(object):
 	"""decorator for commands"""
-	
+
 	def __init__(self, *decorators):
 		"""store decorators"""
-		
+
 		self._decorators = decorators
-			
+
 	def __call__(self, *args, **kwargs):
 		"""bind command on first call and call command on subsequent calls"""
 		
@@ -54,31 +54,32 @@ class CommandResponse(object):
 	"""provides context for output to a request"""
 	
 	def __init__(self, request):
-		"""retrieves session id from cookie and push it back into the cookie
-		after recreating it if session has expired"""
+		"""retrieves session id from cookie and push it back into the 
+		cookie after recreating it if session has expired"""
 
 		self._request = request
-		cookie = SimpleCookie(self._request.headers.get("cookie", ""))
-		name = self._request.server.version_name
-		if name in cookie: self._request.id = cookie[name].value
-		cookie[name] = self._request.session["id"]
+		cookie = SimpleCookie(request.headers.get("cookie", ""))
+		name = request.server.version_name
+		if name in cookie: request.id = cookie[name].value
+		cookie[name] = request.session["id"]
 		cookie[name]["expires"] = 30 * 24 * 60 * 60 # 30 days
-		self._request.id = cookie[name].value
+		request.id = cookie[name].value
 		self._headers = {"Content-Type": "text/html", 
 			"Set-Cookie": cookie.output(header="")}
-		
+
 	def write(self, data, status=200):
 		"""write output to the response"""
 
-		self._request.session["last"] = time()
+		request = self._request
+		request.session["last"] = time()
 		try:
 			if hasattr(self, "_headers"):
-				self._request.send_response(status)
+				request.send_response(status)
 				for header in self._headers.items():
-					self._request.send_header(*header)
-				self._request.end_headers()
+					request.send_header(*header)
+				request.end_headers()
 				del self._headers
-			self._request.wfile.write("\n%s" % data)
+			request.wfile.write("\n%s" % data)
 			return True
 		except sockerr:
 			return False
@@ -96,16 +97,15 @@ class CommandResponse(object):
 	def redirect(self, url):
 		"""send new location header to redirect to"""
 		
-		######## BROKEN ############
-
+		request = self._request
 		url = list(urlparse(url))
 		if not url[0]:
 			url[0] = "http"
 		if not url[1]:
-			url[1] = self._request.server.address_string.split("://", 1)[1]
-		self._request.send_response(304)
-		self._request.send_header("Location", urlunparse(url))
-		self._request.end_headers()
+			url[1] = request.server.address_string.split("://", 1)[1]
+		request.send_response(302)
+		request.send_header("Location", urlunparse(url))
+		request.end_headers()
 	
 	def error(self, msg, status=500):
 		"""render the error template"""
