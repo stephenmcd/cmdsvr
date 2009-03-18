@@ -22,7 +22,7 @@ class TestServer(CommandServer):
 		request.response.write("<br>Awake!")
 	
 	@Command()
-	def stream(self, request, seconds):
+	def stream(self, request, seconds=0):
 		"""streams response every second for <<x>> seconds"""
 		try:
 			seconds = int(seconds)
