@@ -49,7 +49,7 @@ class TestServer(CommandServer):
 		"""shutdown the server"""
 		if password == "devo123":
 			request.response.write("Quitting!")
-			request.server.quit()
+			super(TestServer, self).quit()
 		else:
 			request.response.write("Invalid password: %s" % password)
 	
