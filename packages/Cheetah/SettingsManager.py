@@ -569,7 +569,7 @@ class SettingsManager(_SettingsCollector):
 
         This method can only handle one level of nesting and will only work with
         numbers, strings, and None.
-	    """
+        """
 
         if outFile is None:
             outFile = StringIO()

@@ -1,30 +1,30 @@
 
 <html>
 <head>
-	<title>Rooms</title>
+  <title>Rooms</title>
 </head>
 
 <body>
 <table border="1" cellspacing="0" cellpadding="20" width="500" align="center">
-	<tr>
-		<th colspan="2"><h1>Rooms</h1></th>
-	</tr>
-	<tr>
-		
-	#for $room in $rooms
-		<td valign="top" height="200">
-			<b><a href="$room.address_string">$room.name</a> 
-				($len(room.users))</b><br />
-			#for $user in $room.users.values()
-				$user.id<br />
-			#end for
-		</td>
-		#set $last = $room == $rooms[-1]
-		#if $len($rooms) % 2 == 1 and $last then "<td>&nbsp;</td>" else ""
-		#if $room.server_port % 2 and not $last then "</tr><tr>" else ""
-	#end for
-		
-	</tr>
+  <tr>
+    <th colspan="2"><h1>Rooms</h1></th>
+  </tr>
+  <tr>
+    
+  #for $room in $rooms
+    <td valign="top" height="200">
+      <b><a href="$room.address_string">$room.name</a> 
+        ($len(room.users))</b><br />
+      #for $user in $room.users.values()
+        $user.id<br />
+      #end for
+    </td>
+    #set $last = $room == $rooms[-1]
+    #if $len($rooms) % 2 == 1 and $last then "<td>&nbsp;</td>" else ""
+    #if $room.server_port % 2 and not $last then "</tr><tr>" else ""
+  #end for
+    
+  </tr>
 </table>
 </body>
 </html>

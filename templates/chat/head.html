@@ -2,50 +2,50 @@
 <html>
 <head>
 
-	<script>
-		window.onload = function() {
-			document.forms[0].message.focus();
-			window.setInterval(function() {
-				window.parent.frames[1].scrollBy(0, 10000);
-			}, 100);
-		}
-	</script>
-	
-	<style>
-		form {display:inline;}
-		.button {cursor:pointer;}
-	</style>
+  <script>
+    window.onload = function() {
+      document.forms[0].message.focus();
+      window.setInterval(function() {
+        window.parent.frames[1].scrollBy(0, 10000);
+      }, 100);
+    }
+  </script>
+  
+  <style>
+    form {display:inline;}
+    .button {cursor:pointer;}
+  </style>
 
 </head>
 <body>
-	
-	<form>
-		
-		<b>$user.id &nbsp;</b>
-		<input type="hidden" name="user" value="$user.id" />
-		<input type="text" name="message" value="" />
-		<select name="action">
-			#for $a in $actions
-			<option value="$a"
-				#if $action == $a then " selected" else ""#>$a</option>
-			#end for
-		</select>		
-	
-		to:
-		<select name="to">
-			<option value="">ALL</option>
-			#for $u in $users
-			<option value="$u.id"
-				#if $to == $u.id then " selected" else ""#>$u.id</option>
-			#end for
-		</select>
-		<input class="button" type="submit" value="Send" />
-		
-	</form>
+  
+  <form>
+    
+    <b>$user.id &nbsp;</b>
+    <input type="hidden" name="user" value="$user.id" />
+    <input type="text" name="message" value="" />
+    <select name="action">
+      #for $a in $actions
+      <option value="$a"
+        #if $action == $a then " selected" else ""#>$a</option>
+      #end for
+    </select>    
+  
+    to:
+    <select name="to">
+      <option value="">ALL</option>
+      #for $u in $users
+      <option value="$u.id"
+        #if $to == $u.id then " selected" else ""#>$u.id</option>
+      #end for
+    </select>
+    <input class="button" type="submit" value="Send" />
+    
+  </form>
 
-	<form target="_parent" action="$logout">
-		<input class="button" type="submit" value="Leave" />
-	</form>
-	
+  <form target="_parent" action="$logout">
+    <input class="button" type="submit" value="Leave" />
+  </form>
+  
 </body>
 </html>
