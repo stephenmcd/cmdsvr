@@ -20,7 +20,7 @@ def strip_html(data, allowed=None):
     """strips html tags, keeping list of allowed"""
 
     if not allowed: allowed = []
-    allowed = zip(["<%s" % t for t in allowed] + ["</%s>" % t 
+    allowed = zip(["<%s" % t for t in allowed] + ["</%s>" % t
         for t in allowed], [str(uuid4()) for tag in allowed * 2])
     for tag, holder in allowed:
         data = data.replace(tag, holder)
@@ -31,7 +31,7 @@ def strip_html(data, allowed=None):
 
 def user(command):
     """user command decorator"""
-    
+
     def _user(self, request, **args):
         id = strip_html(args.get("user", ""))
         if not id:
@@ -39,7 +39,7 @@ def user(command):
             return
         if id not in self.users:
             # new user
-            self.users[id] = {"name": strip_html(args["user"], allowed), 
+            self.users[id] = {"name": strip_html(args["user"], allowed),
                 "id": id, "session_id": request.session["id"], "messages":[]}
             self.add_message(entry_id, id)
         if self.users[id]["session_id"] != request.session["id"]:
@@ -51,18 +51,18 @@ def user(command):
 
 
 class Room(CommandServer):
-    
-    def __init__(self, host=None, port=None, name="Default", building=None):
 
+    def __init__(self, host="", port="", name="Default", building=None):
+
+        CommandServer.__init__(self, host, port)
         self.name = name
         self.port = port
         self.users = {}
         self._building = building
-        CommandServer.__init__(self, host, port)
-    
+
     def add_message(self, message, user_from, user_to="", action=""):
         """sends a new message to each applicable user"""
-        
+
         if message:
             message = strip_html(message, allowed)
             if message == entry_id:
@@ -73,7 +73,7 @@ class Room(CommandServer):
                 message = " <i>%s to %s</i>: %s" % (action, user_to, message)
             else:
                 message = ": %s" % message
-            message = "[%s] %s%s" % (strftime("%H:%M:%S"), 
+            message = "[%s] %s%s" % (strftime("%H:%M:%S"),
                 self.users[user_from]["name"], message)
             for user in self.users.values():
                 if action != private or user["id"] in (user_from, user_to):
@@ -81,71 +81,72 @@ class Room(CommandServer):
             if self._building:
                 message = message.replace("]", "] [%s]" % self.name, 1)
             self.log(message)
-            
+
     def log(self, message):
         """prints each room's messages"""
-        
+
         print message
 
     @Command()
     def index(self, request):
         """display login page"""
-        
+
         request.response.render("chat/login.html", room=self)
 
     @Command(user)
     def body(self, request, user=None):
         """streams response every second for <<x>> seconds"""
-        
+
         request.response.write("\n" * 10000)
         connected = True
         while connected:
             if user["messages"]:
-                connected = request.response.render("chat/message.html", 
+                connected = request.response.render("chat/message.html",
                     message=user["messages"].pop(0))
             else:
                 connected = request.response.write("")
             sleep(.1)
         self.add_message(exit_id, user["id"])
         del self.users[user["id"]]
-        
+
     @Command(user)
     def head(self, request, user=None, message="", to="", action=""):
         """renders the message entry page"""
-    
+
         logout = self.address_string
         if self._building: logout = self._building.address_string
         self.add_message(message, user["id"], to, action)
-        request.response.render("chat/head.html", user=user, to=to, 
-            action=action, actions=actions + [private], 
+        request.response.render("chat/head.html", user=user, to=to,
+            action=action, actions=actions + [private],
             users=self.users.values(), logout=logout)
-    
+
     @Command(user)
     def main(self, request, user=None):
         """renders the frameset page"""
-    
+
         request.response.render("chat/room.html", user=user, room=self)
 
 
 class Building(CommandServer):
-    
-    def __init__(self, host=None, port=None):
+
+    def __init__(self, host="", port=""):
         """create each room server"""
 
-        self.rooms = [Room(port=8000 + i, name=name, building=self) 
+        self.rooms = [Room(port=8000 + i, name=name, building=self)
             for i, name in enumerate(rooms)]
         for room in self.rooms:
             room.session_timeout = 1
             room.start()
         CommandServer.__init__(self, host, port)
-            
+
     @Command()
     def index(self, request):
         """display room lists"""
-        
+
         request.response.render("chat/roomlist.html", rooms=self.rooms)
-    
+
 
 if __name__ == "__main__":
-    server = Building("", 80)
+    import sys
+    server = Building(*(sys.argv + [":80"])[1:][0].split(":"))
     server.start()
