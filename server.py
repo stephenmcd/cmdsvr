@@ -195,6 +195,11 @@ class CommandServer(ThreadingMixIn, HTTPServer, Thread):
     def __init__(self, host=None, port=None):
         """bind commands"""
 
+        if host is None: host = ""
+        if port is None: port = 80
+        HTTPServer.__init__(self, (host, port), CommandRequest)
+        Thread.__init__(self)
+
         self.version_name = self.__class__.__name__
         self.session_timeout = 20
         self.template_dir = pathjoin(dirname(__file__), "templates")
@@ -202,11 +207,6 @@ class CommandServer(ThreadingMixIn, HTTPServer, Thread):
         self._sessions = SessionManager(self)
         self._commands = dict([item for item in [(name, eval("self.%s" % name))
             for name in dir(self)] if hasattr(item[1], "_command")])
-
-        if host is None: host = ""
-        if port is None: port = 80
-        HTTPServer.__init__(self, (host, port), CommandRequest)
-        Thread.__init__(self)
 
     def run(self):
         """start serving and run until quit is called"""
