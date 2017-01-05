@@ -192,12 +192,10 @@ class SessionManager(UserDict):
 class CommandServer(ThreadingMixIn, HTTPServer, Thread):
     """http server with hook for shutting down"""
 
-    def __init__(self, host=None, port=None):
+    def __init__(self, host="", port="80"):
         """bind commands"""
 
-        if host is None: host = ""
-        if port is None: port = 80
-        HTTPServer.__init__(self, (host, port), CommandRequest)
+        HTTPServer.__init__(self, (host, int(port)), CommandRequest)
         Thread.__init__(self)
 
         self.version_name = self.__class__.__name__
@@ -265,6 +263,7 @@ class CommandServer(ThreadingMixIn, HTTPServer, Thread):
 
 
 if __name__ == "__main__":
+    import sys
     from examples.testserver import TestServer
-    server = TestServer()
+    server = TestServer(*(sys.argv + [""])[1:][0].split(":"))
     server.start()
